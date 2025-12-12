@@ -1,0 +1,9 @@
+/* Pattern background for VocAI premium look */
+.pattern-bg {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  background-image: radial-gradient(rgba(12, 12, 12, 0.08) 2px, transparent 0);
+  background-size: 30px 30px;
+  background-position: -5px -5px;
+}
