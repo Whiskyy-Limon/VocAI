@@ -1,20 +1,46 @@
 import React, { useEffect, useState } from 'react'
+import {
+  getComparator,
+  removeFromComparator,
+  clearComparator,
+  comparatorStorageKey,
+} from '../utils/comparatorStorage'
 
 export default function Comparator(){
   const [items, setItems] = useState([])
 
-  useEffect(()=>{
-    setItems(JSON.parse(localStorage.getItem('vocai_comparator')||'[]'))
-  },[])
+  useEffect(() => {
+    setItems(getComparator())
+
+    function handleStorage(event) {
+      if (event.key === comparatorStorageKey) {
+        setItems(getComparator())
+      }
+    }
+
+    function handleCustomEvent(event) {
+      if (event?.detail) {
+        setItems(event.detail)
+      } else {
+        setItems(getComparator())
+      }
+    }
+
+    window.addEventListener('storage', handleStorage)
+    window.addEventListener('vocai_comparator_changed', handleCustomEvent)
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      window.removeEventListener('vocai_comparator_changed', handleCustomEvent)
+    }
+  }, [])
 
   function remove(id){
-    const next = items.filter(i=>i.id!==id)
+    const next = removeFromComparator(id)
     setItems(next)
-    localStorage.setItem('vocai_comparator', JSON.stringify(next))
   }
   function clearAll(){
+    clearComparator()
     setItems([])
-    localStorage.removeItem('vocai_comparator')
   }
 
   return (
@@ -79,6 +105,14 @@ export default function Comparator(){
                           <span className="text-xs text-gray-500">Sin datos</span>
                         )}
                       </div>
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-t">
+                  <td className="p-3 font-semibold">Descripcion</td>
+                  {items.map((i) => (
+                    <td key={i.id} className="p-3 text-sm text-gray-700">
+                      {i.description || 'No especificado'}
                     </td>
                   ))}
                 </tr>

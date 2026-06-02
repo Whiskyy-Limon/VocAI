@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import useCareers from '../hooks/useCareers'
 import Toast from '../components/Toast'
+import { addToComparator } from '../utils/comparatorStorage'
 
 export default function CareerDetail() {
   const { id } = useParams()
@@ -50,31 +51,18 @@ export default function CareerDetail() {
   }
 
   function add() {
-    const current = JSON.parse(localStorage.getItem('vocai_comparator') || '[]')
-    const careerId = career._id || career.id || career.codigo
-
-    if (current.find(x => x.id === careerId)) {
-      setToast({ message: 'Esta carrera ya está en el comparador', type: 'info' })
-      return
+    const result = addToComparator(career)
+    if (!result.ok) {
+      if (result.reason === 'exists') {
+        setToast({ message: 'Esta carrera ya esta en el comparador', type: 'info' })
+        return
+      }
+      if (result.reason === 'max') {
+        setToast({ message: 'El comparador tiene maximo 3 carreras', type: 'info' })
+        return
+      }
     }
 
-    if (current.length >= 3) {
-      setToast({ message: 'El comparador tiene máximo 3 carreras', type: 'info' })
-      return
-    }
-
-    const item = {
-      id: careerId,
-      title: career.title,
-      sede: career.sede || 'Lima',
-      salaryText: career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado'),
-      duration: career.duration || '3 años',
-      field: career.field || '',
-      skills: career.skills || []
-    }
-
-    const updated = [...current, item]
-    localStorage.setItem('vocai_comparator', JSON.stringify(updated))
     setToast({ message: 'Agregado al comparador', type: 'success' })
   }
 
