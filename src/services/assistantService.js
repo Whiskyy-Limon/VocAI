@@ -35,7 +35,7 @@ export async function askVocationalAssistant(userMessage, options = {}) {
     const payload = { message: userMessage.trim() }
 
     // Make POST request to backend assistant endpoint.
-    // Note: the `api` client already sets the base URL to `http://localhost:4000/api`,
+    // Note: the `api` client already sets the base URL via API_BASE_URL,
     // so the correct path here is `/assistant/chat` (not `/api/assistant/chat`) to avoid duplication.
     const response = await api.post('/assistant/chat', payload)
 

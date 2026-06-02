@@ -18,7 +18,7 @@ npm run dev
 
 Notes:
 - The app uses a mock dataset located at `src/mocks/careers.js`. Replace with API calls to fetch real data.
-- API base is controlled via `VITE_API_BASE` environment variable.
+- API base is controlled via `VITE_API_URL` environment variable.
 - Auth expects endpoints under `/api/auth/*` for `login`, `register`, and `forgot` returning `{ token }` on login.
 
 If you want, I can:
