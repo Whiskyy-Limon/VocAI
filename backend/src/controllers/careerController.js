@@ -31,98 +31,84 @@ const getCareerById = async (req, res) => {
 // GET /api/careers/seed  (usar solo para cargar datos iniciales)
 const seedCareers = async (req, res) => {
   try {
+    if (process.env.NODE_ENV !== 'development') {
+      return res.status(403).json({ ok: false, message: 'Seed deshabilitado fuera de desarrollo' });
+    }
+
     await Career.deleteMany({});
 
     const careers = [
       {
-        title: 'Diseño y Desarrollo de Software',
-        codigo: 'DDS',
-        department: 'Tecnología Digital',
-        sede: 'Lima',
-        duration: '3 años',
-        field: 'Desarrollo de software y aplicaciones',
-        salary: 3200,
-        demand: 'Muy Alta',
-        description:
-          'Convierte ideas en aplicaciones web y móviles robustas, seguras y escalables.',
-        longDescription:
-          'La carrera de Diseño y Desarrollo de Software te prepara para convertir ideas en aplicaciones web y móviles robustas, seguras y escalables. Diseñarás interfaces intuitivas centradas en el usuario, implementarás soluciones usando tecnologías modernas y aplicarás buenas prácticas de arquitectura y pruebas. Al egresar podrás participar en todo el ciclo de vida del software, desde el análisis de requerimientos hasta el despliegue en la nube.',
-        areas: ['Programación', 'Aplicaciones web', 'Aplicaciones móviles'],
-      },
-      {
-        title: 'Administración de Redes y Comunicaciones',
-        codigo: 'ARC',
-        department: 'Tecnología Digital',
-        sede: 'Lima',
-        duration: '3 años',
-        field: 'Redes de datos e infraestructura de comunicaciones',
-        salary: 3000,
-        demand: 'Alta',
-        description:
-          'Gestiona redes, servicios de conectividad y seguridad en la infraestructura de comunicaciones.',
-        longDescription:
-          'La carrera de Administración de Redes y Comunicaciones te forma en el diseño, implementación y gestión de redes de datos y servicios de comunicación. Desarrollarás competencias para configurar equipos de red, administrar servicios de conectividad, monitorear el rendimiento y aplicar políticas de seguridad. Además, conocerás tecnologías relacionadas con virtualización, cloud computing e Internet de las Cosas para responder a las necesidades actuales de infraestructura.',
-        areas: ['Redes', 'Seguridad', 'Cloud'],
-      },
-      {
-        title: 'Diseño y Desarrollo de Simuladores y Videojuegos',
-        codigo: 'DSV',
-        department: 'Tecnología Digital',
-        sede: 'Lima',
-        duration: '3 años',
-        field: 'Simuladores interactivos y videojuegos',
-        salary: 2800,
-        demand: 'Alta',
-        description:
-          'Diseña y desarrolla simuladores interactivos y videojuegos para distintas plataformas.',
-        longDescription:
-          'Esta carrera se orienta al diseño y desarrollo de simuladores interactivos y videojuegos para distintas plataformas. Aprenderás a combinar mecánicas de juego, narrativa, arte digital y programación para crear experiencias inmersivas. Trabajarás con motores de videojuegos, realidad virtual y aumentada, y técnicas de diseño de niveles, preparándote para participar en estudios de desarrollo y proyectos de entretenimiento digital.',
-        areas: ['Videojuegos', 'Simuladores', 'Realidad virtual'],
-      },
-      {
         title: 'Modelado y Animación Digital',
         codigo: 'MAD',
         department: 'Tecnología Digital',
-        sede: 'Lima',
-        duration: '3 años',
-        field: 'Modelado 3D, animación y contenidos digitales',
-        salary: 2600,
-        demand: 'Media',
-        description:
-          'Crea recursos visuales y artísticos para la industria creativa mediante modelado y animación 3D.',
-        longDescription:
-          'La carrera de Modelado y Animación Digital te forma en la creación de recursos visuales y artísticos para la industria creativa. Desarrollarás habilidades en modelado 3D, animación, texturizado y composición para producir contenidos para cine, videojuegos, simuladores y experiencias interactivas. Aprenderás a trabajar con herramientas especializadas y flujos de producción que responden a las tendencias actuales del mercado digital.',
-        areas: ['Modelado 3D', 'Animación', 'Arte digital'],
+        sede: 'Lima / Santa Anita',
+        duration: '2 años',
+        field: 'Modelado 3D, texturizado, animación y recursos visuales para entretenimiento, cine, videojuegos y publicidad.',
+        salaryText: 'Desde S/ 1,200 a S/ 1,500 (junior)',
+        description: 'Formación enfocada en creación de personajes, escenarios y animaciones 3D para industria creativa.',
+        longDescription: 'Formación orientada a modelado, texturizado y animación 3D con un enfoque aplicado a proyectos de entretenimiento, publicidad y medios digitales. Se desarrolla la capacidad de crear personajes, entornos y efectos visuales para productos audiovisuales y experiencias interactivas.',
+        skills: ['Modelado 3D', 'Texturizado', 'Animación', 'Renderizado', 'Narrativa visual'],
       },
       {
         title: 'Ciberseguridad y Auditoría Informática',
         codigo: 'CAI',
         department: 'Tecnología Digital',
-        sede: 'Lima',
+        sede: 'Lima / Santa Anita',
         duration: '3 años',
-        field: 'Seguridad de la información y auditoría de sistemas',
-        salary: 3000,
-        demand: 'Muy Alta',
-        description:
-          'Protege sistemas, redes y datos frente a ciberataques y realiza auditorías de seguridad.',
-        longDescription:
-          'Esta carrera desarrolla competencias para proteger sistemas informáticos, redes y datos frente a ciberataques. Trabajarás con marcos de referencia y buenas prácticas de la industria para diseñar controles de seguridad, monitorear incidentes, realizar pruebas de vulnerabilidades y ejecutar auditorías de seguridad de la información. Estarás preparado para responder ante amenazas y apoyar la continuidad operativa de las organizaciones.',
-        areas: ['Seguridad', 'Auditoría', 'Gestión de riesgos'],
+        field: 'Protección de sistemas, redes y datos, auditoría informática, seguridad y análisis de riesgos.',
+        salaryText: 'Aprox. S/ 2,500 a S/ 3,000',
+        description: 'Formación en seguridad de la información, auditoría, respuesta a incidentes y control de riesgos.',
+        longDescription: 'Se enfoca en la protección de infraestructura tecnológica, auditorías de seguridad y análisis de riesgos. Incluye la implementación de controles, monitoreo, evaluación de vulnerabilidades y respuesta a incidentes en entornos empresariales.',
+        skills: ['Seguridad de redes', 'Auditoría', 'Análisis de riesgos', 'Pentesting básico', 'Respuesta a incidentes'],
+      },
+      {
+        title: 'Diseño y Desarrollo de Software',
+        codigo: 'DDS',
+        department: 'Tecnología Digital',
+        sede: 'Lima / Santa Anita',
+        duration: '3 años',
+        field: 'Desarrollo web, móvil, cloud, interfaces, sistemas y soluciones de software.',
+        salaryText: 'Aprox. S/ 1,700 a S/ 2,500',
+        description: 'Formación en programación, arquitectura y despliegue de software moderno.',
+        longDescription: 'Desarrollo de soluciones digitales que abarcan aplicaciones web y móviles, servicios en la nube y arquitectura de software. Se trabaja con prácticas modernas de desarrollo, diseño de interfaces y pruebas de calidad.',
+        skills: ['Desarrollo web', 'Desarrollo móvil', 'APIs', 'Bases de datos', 'Cloud'],
+      },
+      {
+        title: 'Diseño y Desarrollo de Simuladores y Videojuegos',
+        codigo: 'DSV',
+        department: 'Tecnología Digital',
+        sede: 'Lima / Santa Anita',
+        duration: '3 años',
+        field: 'Desarrollo de videojuegos y simuladores, realidad virtual y aumentada para Android, iOS, web, PC y consolas.',
+        salaryText: 'Aprox. S/ 2,700 en adelante',
+        description: 'Formación en motores de juego, diseño de niveles y experiencias inmersivas.',
+        longDescription: 'Se centra en la creación de videojuegos y simuladores interactivos utilizando motores modernos, realidad virtual y aumentada. Incluye diseño de niveles, programación y experiencia de usuario en múltiples plataformas.',
+        skills: ['Unity/Unreal', 'Programación de juegos', 'UX interactiva', 'Realidad virtual', 'Realidad aumentada'],
+      },
+      {
+        title: 'Administración de Redes y Comunicaciones',
+        codigo: 'ARC',
+        department: 'Tecnología Digital',
+        sede: 'Lima / Santa Anita',
+        duration: '3 años',
+        field: 'Redes, telecomunicaciones, cloud computing, servicios de voz, comunicaciones inalámbricas e IoT.',
+        salaryText: 'Aprox. S/ 1,600 a S/ 2,000',
+        description: 'Formación en diseño, implementación y gestión de redes y comunicaciones modernas.',
+        longDescription: 'Especialización en infraestructura de comunicaciones, redes de datos, servicios de voz, cloud computing y soluciones IoT. Incluye administración, seguridad y monitoreo de servicios críticos.',
+        skills: ['Redes', 'Cloud', 'IoT', 'Seguridad', 'Comunicaciones inalámbricas'],
       },
       {
         title: 'Big Data y Ciencia de Datos',
         codigo: 'BDC',
         department: 'Tecnología Digital',
-        sede: 'Lima',
+        sede: 'Lima / Santa Anita',
         duration: '3 años',
-        field: 'Análisis de datos y machine learning',
-        salary: 3500,
-        demand: 'Muy Alta',
-        description:
-          'Analiza grandes volúmenes de información para apoyar la toma de decisiones basada en datos.',
-        longDescription:
-          'La carrera de Big Data y Ciencia de Datos te especializa en el análisis y aprovechamiento de grandes volúmenes de información. Aprenderás a recolectar, limpiar y transformar datos, aplicar técnicas estadísticas y de aprendizaje automático, y comunicar hallazgos mediante visualizaciones efectivas. Podrás apoyar la toma de decisiones basada en datos en organizaciones que necesitan entender mejor su información para generar valor.',
-        areas: ['Big Data', 'Ciencia de datos', 'Machine learning'],
+        field: 'Análisis de datos, machine learning, minería de datos, visualización y toma de decisiones.',
+        salaryText: 'Aprox. S/ 3,000 a S/ 3,600',
+        description: 'Formación en análisis, modelado predictivo y visualización de grandes volúmenes de datos.',
+        longDescription: 'Se desarrolla capacidad para recolectar, limpiar, analizar y visualizar grandes conjuntos de datos. Incluye fundamentos de machine learning, minería de datos y soporte a decisiones basadas en evidencia.',
+        skills: ['Analítica', 'Machine learning', 'SQL/NoSQL', 'Visualización', 'ETL'],
       },
     ];
 

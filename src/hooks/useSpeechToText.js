@@ -14,40 +14,69 @@ export default function useSpeechToText() {
     }
   }, [])
 
-  const startListening = useCallback((callback) => {
+  const startListening = useCallback((callbackOrOptions) => {
     if (!isSupported || !recognitionRef.current) return
 
     const recognition = recognitionRef.current
-    recognition.continuous = false
-    recognition.interimResults = false
+    const options = typeof callbackOrOptions === 'function'
+      ? { onResult: callbackOrOptions }
+      : (callbackOrOptions || {})
+
+    const {
+      onResult,
+      onError,
+      onStart,
+      onEnd,
+      interimResults = false,
+      continuous = false,
+    } = options
+
+    recognition.continuous = !!continuous
+    recognition.interimResults = !!interimResults
     recognition.lang = 'es-ES'
 
     recognition.onstart = () => {
       setIsListening(true)
+      if (onStart) onStart()
     }
 
     recognition.onresult = (event) => {
       let transcript = ''
+      let isFinal = false
       for (let i = event.resultIndex; i < event.results.length; i++) {
         transcript += event.results[i][0].transcript
+        if (event.results[i].isFinal) isFinal = true
       }
-      if (callback) callback(transcript)
-      setIsListening(false)
+
+      if (onResult) {
+        if (interimResults) {
+          onResult(transcript, isFinal)
+        } else if (isFinal) {
+          onResult(transcript, true)
+        }
+      }
+
+      if (!interimResults && isFinal) {
+        setIsListening(false)
+      }
     }
 
     recognition.onerror = (event) => {
       console.error('[useSpeechToText] Error:', event.error)
+      if (onError) onError(event)
       setIsListening(false)
     }
 
     recognition.onend = () => {
       setIsListening(false)
+      if (onEnd) onEnd()
     }
 
     try {
       recognition.start()
     } catch (e) {
       console.error('[useSpeechToText] Error starting recognition:', e)
+      if (onError) onError(e)
       setIsListening(false)
     }
   }, [isSupported])

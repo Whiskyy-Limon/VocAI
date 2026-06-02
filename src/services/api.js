@@ -25,8 +25,6 @@ api.interceptors.request.use((config) => {
   try {
     const t = localStorage.getItem('token') || localStorage.getItem('vocai_token')
     if (t) {
-      // Temporal debug log to confirm interceptor runs and token is read
-      console.log('INTERCEPTOR TOKEN:', t)
       config.headers = config.headers || {}
       config.headers['Authorization'] = `Bearer ${t}`
     }

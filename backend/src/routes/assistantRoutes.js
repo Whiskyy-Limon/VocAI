@@ -1,6 +1,6 @@
 // backend/src/routes/assistantRoutes.js
 const express = require('express');
-const { askAssistant } = require('../controllers/assistantController');
+const { askAssistant, chatAssistant } = require('../controllers/assistantController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -22,7 +22,7 @@ const router = express.Router();
  *   "reply": "Según tu perfil, te recomiendo...",
  *   "metadata": {
  *     "topCareers": [ { "id": "64a1...", "title": "Simuladores y Videojuegos" } ],
- *     "usedProfile": true,
+ *     "usedProfile": false,
  *     "model": "gpt-4o-mini"
  *   }
  * }
@@ -34,5 +34,6 @@ const router = express.Router();
  * Nota: No envíes `userId` en el body; el servidor lo obtiene del JWT.
  */
 router.post('/', authMiddleware, askAssistant);
+router.post('/chat', chatAssistant);
 
 module.exports = router;

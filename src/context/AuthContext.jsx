@@ -14,7 +14,8 @@ export function AuthProvider({ children }) {
       if (token) {
         try {
           const decoded = jwtDecode(token)
-          setUser({ id: decoded.sub, email: decoded.email })
+          const userId = decoded.sub || decoded.id || decoded._id
+          setUser({ id: userId, email: decoded.email })
           api.setToken(token)
         } catch (err) {
           console.error('Invalid token', err)
@@ -36,7 +37,8 @@ export function AuthProvider({ children }) {
     setToken(t)
     api.setToken(t)
     const decoded = jwtDecode(t)
-    setUser({ id: decoded.sub, email: decoded.email })
+    const userId = decoded.sub || decoded.id || decoded._id
+    setUser({ id: userId, email: decoded.email })
   }
 
   const register = async (payload) => {

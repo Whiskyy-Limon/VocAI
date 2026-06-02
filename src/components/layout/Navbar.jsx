@@ -21,7 +21,6 @@ export default function Navbar() {
               <Link to="/" className="text-sm">Dashboard</Link>
               <Link to="/catalog" className="text-sm">Catálogo</Link>
               <Link to="/assistant" className="text-sm">Asistente</Link>
-              <Link to="/questionnaire" className="text-sm">Cuestionario</Link>
               <Link to="/comparator" className="text-sm">Comparador</Link>
               <button onClick={handleLogout} className="text-sm text-red-500">Salir</button>
             </>

@@ -67,9 +67,10 @@ export default function CareerDetail() {
       id: careerId,
       title: career.title,
       sede: career.sede || 'Lima',
-      salary: career.salary || '$',
-      demand: career.demand || '',
-      duration: career.duration || ''
+      salaryText: career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado'),
+      duration: career.duration || '3 años',
+      field: career.field || '',
+      skills: career.skills || []
     }
 
     const updated = [...current, item]
@@ -77,7 +78,7 @@ export default function CareerDetail() {
     setToast({ message: 'Agregado al comparador', type: 'success' })
   }
 
-  const departmentText = `Departamento de ${career.departamento || 'Tecnología Digital'} – TECSUP, Sede ${career.sede || 'Lima'}`
+  const departmentText = `Departamento de ${career.departamento || 'Tecnología Digital'} – TECSUP, Sede ${career.sede || 'Lima / Santa Anita'}`
 
   return (
     <div className="card-premium space-y-4">
@@ -116,10 +117,12 @@ export default function CareerDetail() {
 
           {career.skills?.length > 0 && (
             <>
-              <h3 className="mt-3 font-semibold">Habilidades</h3>
-              <p className="text-sm text-gray-700">
-                {career.skills.join(', ')}
-              </p>
+              <h3 className="mt-3 font-semibold">Tecnologías y habilidades</h3>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {career.skills.map((skill) => (
+                  <span key={skill} className="assistant-chip">{skill}</span>
+                ))}
+              </div>
             </>
           )}
         </div>
@@ -133,7 +136,7 @@ export default function CareerDetail() {
 
           <h3 className="mt-3 font-semibold">Salario promedio</h3>
           <p className="text-sm text-gray-700">
-            {career.salary ? `S/ ${career.salary}` : 'No especificado'}
+            {career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado')}
           </p>
 
           <h3 className="mt-3 font-semibold">Duración</h3>
@@ -141,9 +144,9 @@ export default function CareerDetail() {
             {career.duration || '3 años'}
           </p>
 
-          <h3 className="mt-3 font-semibold">Demanda laboral</h3>
+          <h3 className="mt-3 font-semibold">Enfoque profesional</h3>
           <p className="text-sm text-gray-700">
-            {career.demand || 'No especificado'}
+            {career.field || 'No especificado'}
           </p>
         </div>
       </div>

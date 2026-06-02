@@ -1,74 +1,74 @@
 export const CAREERS = [
   {
     id: 'td1',
-    title: 'Diseño y Desarrollo de Software',
+    title: 'Modelado y Animación Digital',
     departamento: 'Tecnología Digital',
-    sede: 'Lima',
-    codigo: 'TDD-SW',
-    demand: 'Alta',
-    salary: 2500,
-    duration: '3 años',
-    description: 'Formación para desarrollar soluciones de software, aplicaciones web y móviles.',
-    competencies: ['Programación', 'Bases de datos', 'Desarrollo web', 'Desarrollo móvil', 'Metodologías ágiles']
+    sede: 'Lima / Santa Anita',
+    codigo: 'TDD-MAD',
+    duration: '2 años',
+    field: 'Modelado 3D, texturizado, animación y recursos visuales para entretenimiento, cine, videojuegos y publicidad.',
+    salaryText: 'Desde S/ 1,200 a S/ 1,500 (junior)',
+    description: 'Formación enfocada en creación de personajes, escenarios y animaciones 3D para industria creativa.',
+    skills: ['Modelado 3D', 'Texturizado', 'Animación', 'Renderizado', 'Narrativa visual']
   },
   {
     id: 'td2',
-    title: 'Big Data y Ciencia de Datos',
+    title: 'Ciberseguridad y Auditoría Informática',
     departamento: 'Tecnología Digital',
-    sede: 'Lima',
-    codigo: 'TDD-BD',
-    demand: 'Alta',
-    salary: 2600,
+    sede: 'Lima / Santa Anita',
+    codigo: 'TDD-CAI',
     duration: '3 años',
-    description: 'Formación en análisis de datos, machine learning y explotación de datos para la toma de decisiones.',
-    competencies: ['Estadística', 'Machine Learning', 'Bases de datos', 'Visualización']
+    field: 'Protección de sistemas, redes y datos, auditoría informática, seguridad y analisis de riesgos.',
+    salaryText: 'Aprox. S/ 2,500 a S/ 3,000',
+    description: 'Formación en seguridad de la informacion, auditoria, respuesta a incidentes y control de riesgos.',
+    skills: ['Seguridad de redes', 'Auditoria', 'Analisis de riesgos', 'Pentesting basico', 'Respuesta a incidentes']
   },
   {
     id: 'td3',
-    title: 'Ciberseguridad y Auditoría Informática',
+    title: 'Diseño y Desarrollo de Software',
     departamento: 'Tecnología Digital',
-    sede: 'Lima',
-    codigo: 'TDD-CS',
-    demand: 'Alta',
-    salary: 2550,
+    sede: 'Lima / Santa Anita',
+    codigo: 'TDD-DDS',
     duration: '3 años',
-    description: 'Formación en protección de sistemas, análisis de vulnerabilidades y auditoría de seguridad.',
-    competencies: ['Seguridad informática', 'Forense', 'Auditoría', 'Análisis de vulnerabilidades']
+    field: 'Desarrollo web, movil, cloud, interfaces, sistemas y soluciones de software.',
+    salaryText: 'Aprox. S/ 1,700 a S/ 2,500',
+    description: 'Formación en programacion, arquitectura y despliegue de software moderno.',
+    skills: ['Desarrollo web', 'Desarrollo movil', 'APIs', 'Bases de datos', 'Cloud']
   },
   {
     id: 'td4',
     title: 'Diseño y Desarrollo de Simuladores y Videojuegos',
     departamento: 'Tecnología Digital',
-    sede: 'Lima',
-    codigo: 'TDD-GG',
-    demand: 'Alta',
-    salary: 2400,
+    sede: 'Lima / Santa Anita',
+    codigo: 'TDD-DSV',
     duration: '3 años',
-    description: 'Formación en desarrollo de videojuegos, simuladores y experiencias interactivas.',
-    competencies: ['Programación de juegos', 'Diseño de niveles', 'Gráficos 3D', 'Simulación']
+    field: 'Desarrollo de videojuegos y simuladores, realidad virtual y aumentada para Android, iOS, web, PC y consolas.',
+    salaryText: 'Aprox. S/ 2,700 en adelante',
+    description: 'Formación en motores de juego, diseño de niveles y experiencias inmersivas.',
+    skills: ['Unity/Unreal', 'Programacion de juegos', 'UX interactiva', 'Realidad virtual', 'Realidad aumentada']
   },
   {
     id: 'td5',
     title: 'Administración de Redes y Comunicaciones',
     departamento: 'Tecnología Digital',
-    sede: 'Lima',
-    codigo: 'TDD-NET',
-    demand: 'Alta',
-    salary: 2400,
+    sede: 'Lima / Santa Anita',
+    codigo: 'TDD-ARC',
     duration: '3 años',
-    description: 'Configuración, administración y seguridad de redes y servicios de comunicaciones.',
-    competencies: ['Redes de datos', 'Seguridad', 'Servidores', 'Virtualización']
+    field: 'Redes, telecomunicaciones, cloud computing, servicios de voz, comunicaciones inalambricas e IoT.',
+    salaryText: 'Aprox. S/ 1,600 a S/ 2,000',
+    description: 'Formación en diseño, implementacion y gestion de redes y comunicaciones modernas.',
+    skills: ['Redes', 'Cloud', 'IoT', 'Seguridad', 'Comunicaciones inalambricas']
   },
   {
     id: 'td6',
-    title: 'Modelado y Animación Digital',
+    title: 'Big Data y Ciencia de Datos',
     departamento: 'Tecnología Digital',
-    sede: 'Lima',
-    codigo: 'TDD-AN',
-    demand: 'Media',
-    salary: 2000,
+    sede: 'Lima / Santa Anita',
+    codigo: 'TDD-BDC',
     duration: '3 años',
-    description: 'Creación de contenidos 3D, animaciones y modelos para multimedia, cine y videojuegos.',
-    competencies: ['Modelado 3D', 'Animación', 'Renderizado']
+    field: 'Analisis de datos, machine learning, mineria de datos, visualizacion y toma de decisiones.',
+    salaryText: 'Aprox. S/ 3,000 a S/ 3,600',
+    description: 'Formación en analisis, modelado predictivo y visualizacion de grandes volumenes de datos.',
+    skills: ['Analitica', 'Machine learning', 'SQL/NoSQL', 'Visualizacion', 'ETL']
   }
-];
+]

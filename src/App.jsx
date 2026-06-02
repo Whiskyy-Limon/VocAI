@@ -7,9 +7,6 @@ import Dashboard from './pages/Dashboard'
 import Catalog from './pages/Catalog'
 import CareerDetail from './pages/CareerDetail'
 import Comparator from './pages/Comparator'
-import Questionnaire from './pages/Questionnaire'
-import Profile from './pages/Profile'
-import History from './pages/History'
 import Assistant from './pages/Assistant'
 import Navbar from './components/layout/Navbar'
 import { useAuth } from './hooks/useAuth'
@@ -35,9 +32,6 @@ export default function App() {
           <Route path="/career/:id" element={<PrivateRoute><CareerDetail /></PrivateRoute>} />
           <Route path="/comparator" element={<PrivateRoute><Comparator /></PrivateRoute>} />
           <Route path="/assistant" element={<PrivateRoute><Assistant /></PrivateRoute>} />
-          <Route path="/questionnaire" element={<PrivateRoute><Questionnaire /></PrivateRoute>} />
-          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

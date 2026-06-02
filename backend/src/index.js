@@ -9,8 +9,8 @@ dotenv.config();
 
 const authRoutes = require('./routes/authRoutes');
 const careerRoutes = require('./routes/careerRoutes');
-const profileRoutes = require('./routes/profileRoutes');
 const assistantRoutes = require('./routes/assistantRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 
 const app = express();
 
@@ -25,8 +25,8 @@ app.use(morgan('dev'));
 // Rutas base
 app.use('/api/auth', authRoutes);
 app.use('/api/careers', careerRoutes);
-app.use('/api/profiles', profileRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/profiles', profileRoutes);
 
 // Healthcheck
 app.get('/api/health', (req, res) => {

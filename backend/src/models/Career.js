@@ -22,6 +22,7 @@ const careerSchema = new mongoose.Schema(
 
     // Datos para el comparador / catálogo
     salary: { type: Number },
+    salaryText: { type: String },
     demand: { type: String },
 
     areas: [{ type: String }],

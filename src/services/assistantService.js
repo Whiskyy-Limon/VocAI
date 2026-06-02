@@ -36,18 +36,18 @@ export async function askVocationalAssistant(userMessage, options = {}) {
 
     // Make POST request to backend assistant endpoint.
     // Note: the `api` client already sets the base URL to `http://localhost:4000/api`,
-    // so the correct path here is `/assistant` (not `/api/assistant`) to avoid duplication.
-    const response = await api.post('/assistant', payload)
+    // so the correct path here is `/assistant/chat` (not `/api/assistant/chat`) to avoid duplication.
+    const response = await api.post('/assistant/chat', payload)
 
-    const { reply, metadata } = response.data
+    const { response: aiResponse } = response.data
 
     // Build standardized response for frontend
     return {
-      text: reply || 'No se pudo generar una respuesta.',
-      topCareers: metadata?.topCareers || [],
+      text: aiResponse || 'No se pudo generar una respuesta.',
+      topCareers: [],
       suggestions: [], // Keep for component compatibility
       // Keep backward compatibility: recommendedCareers used by assistant chat UI
-      recommendedCareers: metadata?.topCareers || [],
+      recommendedCareers: [],
     }
   } catch (error) {
     const status = error.response?.status
@@ -56,11 +56,6 @@ export async function askVocationalAssistant(userMessage, options = {}) {
     // 401/403: Authentication/authorization issue — ask user to re-login
     if (status === 401 || status === 403) {
       throw new Error('Tu sesión ha expirado o no se reconoce el usuario. Por favor, inicia sesión nuevamente.')
-    }
-
-    // If backend explicitly says no vocational profile exists, propagate that exact message
-    if (status === 400 && serverMessage === 'No se encontró un perfil vocacional. Primero completa el cuestionario.') {
-      throw new Error(serverMessage)
     }
 
     // For 500 or any other server/network error show a generic message

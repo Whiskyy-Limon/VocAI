@@ -18,42 +18,72 @@ export default function Comparator(){
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-4">Comparador</h1>
-      {items.length===0 ? <div>No hay carreras en el comparador</div> : (
-        <div>
-          <div className="overflow-auto">
-            <div className="card-premium">
-            <table className="min-w-full">
+    <div className="space-y-6">
+      <div className="card-premium">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-semibold">Comparador de carreras</h1>
+            <p className="text-sm text-gray-600 mt-2">
+              Compara duracion, sueldo referencial, enfoque profesional y tecnologias clave.
+            </p>
+          </div>
+          <button onClick={clearAll} className="v-btn px-3 py-2 rounded">Limpiar comparador</button>
+        </div>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="card-premium text-sm text-gray-600">No hay carreras en el comparador.</div>
+      ) : (
+        <div className="overflow-auto">
+          <div className="card-premium">
+            <table className="min-w-full text-sm">
               <thead>
-                <tr>
-                  <th className="p-2">Campo</th>
-                  {items.map(i=> <th key={i.id} className="p-2">{i.title}<div className="text-xs"><button onClick={()=>remove(i.id)} className="v-btn">Quitar</button></div></th>)}
+                <tr className="text-left">
+                  <th className="p-3 text-xs uppercase tracking-wider text-gray-500">Variable</th>
+                  {items.map((i) => (
+                    <th key={i.id} className="p-3">
+                      <div className="font-semibold">{i.title}</div>
+                      <button onClick={() => remove(i.id)} className="btn-secondary mt-2 text-xs">
+                        Quitar
+                      </button>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="p-2 font-semibold">Sede</td>
-                  {items.map(i=> <td key={i.id} className="p-2">{i.sede}</td>)}
+                <tr className="border-t">
+                  <td className="p-3 font-semibold">Sede</td>
+                  {items.map((i) => <td key={i.id} className="p-3">{i.sede}</td>)}
                 </tr>
-                <tr>
-                  <td className="p-2 font-semibold">Salario</td>
-                  {items.map(i=> <td key={i.id} className="p-2">${i.salary}</td>)}
+                <tr className="border-t">
+                  <td className="p-3 font-semibold">Duracion</td>
+                  {items.map((i) => <td key={i.id} className="p-3">{i.duration}</td>)}
                 </tr>
-                <tr>
-                  <td className="p-2 font-semibold">Demanda</td>
-                  {items.map(i=> <td key={i.id} className="p-2">{i.demand}</td>)}
+                <tr className="border-t">
+                  <td className="p-3 font-semibold">Sueldo referencial</td>
+                  {items.map((i) => <td key={i.id} className="p-3">{i.salaryText || i.salary || 'No especificado'}</td>)}
                 </tr>
-                <tr>
-                  <td className="p-2 font-semibold">Duración</td>
-                  {items.map(i=> <td key={i.id} className="p-2">{i.duration}</td>)}
+                <tr className="border-t">
+                  <td className="p-3 font-semibold">Enfoque profesional</td>
+                  {items.map((i) => <td key={i.id} className="p-3">{i.field || 'No especificado'}</td>)}
+                </tr>
+                <tr className="border-t">
+                  <td className="p-3 font-semibold">Tecnologias / habilidades</td>
+                  {items.map((i) => (
+                    <td key={i.id} className="p-3">
+                      <div className="flex flex-wrap gap-2">
+                        {(i.skills || i.technologies || []).map((skill) => (
+                          <span key={skill} className="assistant-chip">{skill}</span>
+                        ))}
+                        {(!i.skills || i.skills.length === 0) && (!i.technologies || i.technologies.length === 0) && (
+                          <span className="text-xs text-gray-500">Sin datos</span>
+                        )}
+                      </div>
+                    </td>
+                  ))}
                 </tr>
               </tbody>
             </table>
-            </div>
-          </div>
-          <div className="mt-4">
-            <button onClick={clearAll} className="v-btn px-3 py-1 rounded">Limpiar comparador</button>
           </div>
         </div>
       )}

@@ -27,9 +27,10 @@ export default function CareerCard({ career, onAdd }){
       id,
       title: career.title,
       sede: career.sede || 'Lima',
-      salary: career.salary || '$',
-      demand: career.demand || '',
-      duration: career.duration || ''
+      salaryText: career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado'),
+      duration: career.duration || '3 años',
+      field: career.field || '',
+      skills: career.skills || []
     }
     
     const updated = [...current, item]
@@ -44,16 +45,33 @@ export default function CareerCard({ career, onAdd }){
   
   return (
     <>
-      <div className="card-premium">
-        <h3 className="font-semibold text-lg">{career.title}</h3>
-        <p className="text-sm text-gray-600">{departmentText}</p>
-        <p className="mt-2 text-sm text-gray-700">{career.description}</p>
-      <div className="mt-4 flex items-center justify-between">
-        <Link to={`/career/${career._id || career.id || career.codigo}`} className="btn-secondary text-sm" style={{textDecoration: 'none'}}>Ver detalles</Link>
-        <div className="flex items-center gap-2">
-            <button onClick={handleAddToComparator} className="v-btn px-3 py-1 rounded text-sm">Agregar</button>
-            <div className="text-sm font-medium">${career.salary}</div>
+      <div className="card-premium flex flex-col gap-4">
+        <div>
+          <h3 className="font-semibold text-lg">{career.title}</h3>
+          <p className="text-xs text-gray-500">{departmentText}</p>
+        </div>
+
+        <p className="text-sm text-gray-700">{career.description}</p>
+
+        <div className="grid grid-cols-2 gap-3 text-xs text-gray-600">
+          <div>
+            <div className="font-semibold text-gray-700">Duracion</div>
+            <div>{career.duration || '3 años'}</div>
           </div>
+          <div>
+            <div className="font-semibold text-gray-700">Sueldo referencial</div>
+            <div>{career.salaryText || 'No especificado'}</div>
+          </div>
+        </div>
+
+        <div className="text-xs text-gray-600">
+          <div className="font-semibold text-gray-700">Enfoque</div>
+          <div>{career.field}</div>
+        </div>
+
+        <div className="mt-auto flex items-center justify-between">
+          <Link to={`/career/${career._id || career.id || career.codigo}`} className="btn-secondary text-sm" style={{textDecoration: 'none'}}>Ver detalles</Link>
+          <button onClick={handleAddToComparator} className="v-btn px-3 py-1 rounded text-sm">Agregar</button>
         </div>
       </div>
       <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../services/api'
+import { CAREERS as LOCAL_CAREERS } from '../mocks/careers'
 
 /**
  * Hook to fetch careers from the backend API
@@ -19,11 +20,14 @@ export default function useCareers() {
         setLoading(true)
         setError(null)
         const response = await api.get('/careers')
-        setCareers(response.data || [])
+        const data = Array.isArray(response.data) && response.data.length > 0
+          ? response.data
+          : LOCAL_CAREERS
+        setCareers(data)
       } catch (err) {
         console.error('[useCareers] Error fetching careers:', err)
-        setError(err.response?.data?.message || 'No se pudieron cargar las carreras. Intenta nuevamente más tarde.')
-        setCareers([])
+        setError(err.response?.data?.message || 'No se pudieron cargar las carreras. Mostrando datos base.')
+        setCareers(LOCAL_CAREERS)
       } finally {
         setLoading(false)
       }
