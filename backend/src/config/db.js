@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 async function connectDB() {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
       dbName: 'vocai_db',
     });
     console.log(`MongoDB conectado: ${conn.connection.host}`);
