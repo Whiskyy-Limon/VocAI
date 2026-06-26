@@ -63,10 +63,23 @@ body {
 
 .assistant-chat__log {
 	height: 58vh;
-	overflow: auto;
+	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
-	gap: 14px;
+	gap: 12px;
+	padding: 4px 2px;
+	scroll-behavior: smooth;
+}
+
+.assistant-chat__log::-webkit-scrollbar {
+	width: 4px;
+}
+.assistant-chat__log::-webkit-scrollbar-track {
+	background: transparent;
+}
+.assistant-chat__log::-webkit-scrollbar-thumb {
+	background: #e2e8f0;
+	border-radius: 999px;
 }
 
 .assistant-bubble {
@@ -117,9 +130,10 @@ body {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 20px;
+	gap: 16px;
 	min-height: 60vh;
 	text-align: center;
+	padding: 24px 20px;
 }
 
 .assistant-status {
@@ -293,6 +307,138 @@ body {
 @keyframes wave-pulse {
 	0%, 100% { transform: scaleX(0.85); opacity: 0.4; }
 	50% { transform: scaleX(1.1); opacity: 1; }
+}
+
+/* ═══════════════════════════════════════
+   VocAI Avatar
+═══════════════════════════════════════ */
+
+.vocai-avatar-wrap {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+}
+
+.vocai-avatar-svg {
+	width: 160px;
+	height: 160px;
+	filter: drop-shadow(0 12px 32px rgba(14,165,233,0.35));
+	transition: filter 0.4s ease;
+}
+
+/* anillos pulsantes de fondo */
+.avatar-ring {
+	position: absolute;
+	border-radius: 999px;
+	border: 2px solid;
+	opacity: 0;
+	pointer-events: none;
+}
+.avatar-ring-1 {
+	width: 190px; height: 190px;
+	animation: avatar-ring-pulse 1.6s ease-out infinite;
+}
+.avatar-ring-2 {
+	width: 220px; height: 220px;
+	animation: avatar-ring-pulse 1.6s ease-out 0.5s infinite;
+}
+
+@keyframes avatar-ring-pulse {
+	0%   { transform: scale(0.85); opacity: 0.6; }
+	100% { transform: scale(1.15); opacity: 0; }
+}
+
+/* ── Parpadeo normal ── */
+.pupil-blink {
+	animation: eye-blink 3.5s ease-in-out infinite;
+	transform-origin: center;
+	transform-box: fill-box;
+}
+@keyframes eye-blink {
+	0%, 90%, 100% { transform: scaleY(1); }
+	95%            { transform: scaleY(0.1); }
+}
+
+/* ── Pupila pulsando al hablar ── */
+.pupil-pulse {
+	animation: pupil-beat 0.45s ease-in-out infinite alternate;
+	transform-origin: center;
+	transform-box: fill-box;
+}
+@keyframes pupil-beat {
+	from { transform: scale(0.9); }
+	to   { transform: scale(1.15); }
+}
+
+/* ── Pupila girando al pensar ── */
+.pupil-spin {
+	animation: pupil-orbit 1.2s linear infinite;
+	transform-origin: center;
+	transform-box: fill-box;
+}
+@keyframes pupil-orbit {
+	from { transform: translate(0, 0); }
+	25%  { transform: translate(3px, -2px); }
+	50%  { transform: translate(0, -4px); }
+	75%  { transform: translate(-3px, -2px); }
+	100% { transform: translate(0, 0); }
+}
+
+/* ── Ceja arriba al escuchar ── */
+.brow-up {
+	animation: brow-raise 0.3s ease forwards;
+}
+@keyframes brow-raise {
+	to { transform: translateY(-3px); }
+}
+
+/* ── Boca hablando ── */
+.jaw-open {
+	animation: jaw-move 0.38s ease-in-out infinite alternate;
+	transform-origin: center top;
+	transform-box: fill-box;
+}
+@keyframes jaw-move {
+	from { ry: 0; opacity: 0.3; }
+	to   { ry: 6; opacity: 0.65; }
+}
+
+.lower-lip {
+	animation: lip-drop 0.38s ease-in-out infinite alternate;
+	transform-origin: center top;
+	transform-box: fill-box;
+}
+@keyframes lip-drop {
+	from { transform: translateY(0); }
+	to   { transform: translateY(6px); }
+}
+
+/* ── Ondas de sonido ── */
+.sound-waves {
+	display: flex;
+	align-items: flex-end;
+	gap: 4px;
+	height: 28px;
+}
+.sound-bar {
+	display: block;
+	width: 4px;
+	border-radius: 2px;
+	background: #3b82f6;
+	animation: sound-bounce 0.55s ease-in-out infinite alternate;
+}
+.sound-bar:nth-child(1) { height: 8px;  animation-delay: 0s; }
+.sound-bar:nth-child(2) { height: 18px; animation-delay: 0.1s; }
+.sound-bar:nth-child(3) { height: 26px; animation-delay: 0.2s; }
+.sound-bar:nth-child(4) { height: 18px; animation-delay: 0.1s; }
+.sound-bar:nth-child(5) { height: 8px;  animation-delay: 0s; }
+
+@keyframes sound-bounce {
+	from { transform: scaleY(0.4); opacity: 0.6; }
+	to   { transform: scaleY(1);   opacity: 1; }
 }
 
 /* Search input premium style (Uiverse-like) using project palette */

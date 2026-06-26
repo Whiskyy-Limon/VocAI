@@ -1,8 +1,38 @@
 import React, { useState, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import useCareers from '../hooks/useCareers'
 import Toast from '../components/Toast'
 import { addToComparator } from '../utils/comparatorStorage'
+
+const CAREER_ICONS = {
+  'Modelado y Animación Digital': '🎨',
+  'Ciberseguridad y Auditoría Informática': '🔐',
+  'Diseño y Desarrollo de Software': '💻',
+  'Diseño y Desarrollo de Simuladores y Videojuegos': '🎮',
+  'Administración de Redes y Comunicaciones': '🌐',
+  'Big Data y Ciencia de Datos': '📊',
+}
+
+const CAREER_COLORS = {
+  'Modelado y Animación Digital': 'from-pink-500 to-rose-600',
+  'Ciberseguridad y Auditoría Informática': 'from-slate-600 to-slate-800',
+  'Diseño y Desarrollo de Software': 'from-blue-500 to-blue-700',
+  'Diseño y Desarrollo de Simuladores y Videojuegos': 'from-violet-500 to-purple-700',
+  'Administración de Redes y Comunicaciones': 'from-cyan-500 to-teal-700',
+  'Big Data y Ciencia de Datos': 'from-amber-500 to-orange-600',
+}
+
+function InfoCard({ icon, label, value, highlight }) {
+  return (
+    <div className="bg-gray-50 rounded-2xl p-4 flex items-start gap-3">
+      <span className="text-2xl">{icon}</span>
+      <div>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">{label}</p>
+        <p className={`text-sm font-semibold mt-0.5 ${highlight ?? 'text-gray-800'}`}>{value}</p>
+      </div>
+    </div>
+  )
+}
 
 export default function CareerDetail() {
   const { id } = useParams()
@@ -17,125 +47,255 @@ export default function CareerDetail() {
 
   if (loading) {
     return (
-      <div className="card-premium flex items-center justify-center h-48">
-        <p className="text-sm text-slate-500">Cargando carrera...</p>
+      <div className="space-y-4 py-4 animate-pulse">
+        <div className="h-52 bg-gray-200 rounded-2xl" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1,2,3,4].map(i => <div key={i} className="h-20 bg-gray-100 rounded-2xl" />)}
+        </div>
+        <div className="h-40 bg-gray-100 rounded-2xl" />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="card-premium flex items-center justify-center h-48">
-        <p className="text-sm text-red-600">{error}</p>
-      </div>
-    )
-  }
-
-  if (!career) {
-    return (
-      <div className="card-premium flex flex-col items-center justify-center h-64 text-center space-y-3">
-        <h1 className="text-xl md:text-2xl font-semibold">Carrera no encontrada</h1>
-        <p className="text-sm text-slate-500 max-w-md">
-          No hemos encontrado información para esta carrera. Vuelve al catálogo e intenta
-          seleccionar otra opción.
-        </p>
-        <button
-          onClick={() => nav('/catalog')}
-          className="btn-secondary px-4 py-2 rounded inline-flex items-center justify-center"
-          style={{ width: 'auto', textDecoration: 'none' }}
-        >
+      <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
+        <span className="text-5xl">⚠️</span>
+        <p className="text-red-600 font-medium">{error}</p>
+        <button onClick={() => nav('/catalog')} className="text-sm text-blue-600 hover:underline">
           Volver al catálogo
         </button>
       </div>
     )
   }
 
-  function add() {
-    const result = addToComparator(career)
-    if (!result.ok) {
-      if (result.reason === 'exists') {
-        setToast({ message: 'Esta carrera ya esta en el comparador', type: 'info' })
-        return
-      }
-      if (result.reason === 'max') {
-        setToast({ message: 'El comparador tiene maximo 3 carreras', type: 'info' })
-        return
-      }
-    }
-
-    setToast({ message: 'Agregado al comparador', type: 'success' })
+  if (!career) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+        <span className="text-6xl opacity-40">🔍</span>
+        <h2 className="text-xl font-bold text-gray-700">Carrera no encontrada</h2>
+        <p className="text-gray-400 text-sm max-w-xs">
+          No encontramos información para esta carrera. Vuelve al catálogo y elige otra opción.
+        </p>
+        <Link
+          to="/catalog"
+          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors"
+        >
+          Ir al catálogo
+        </Link>
+      </div>
+    )
   }
 
-  const departmentText = `Departamento de ${career.departamento || 'Tecnología Digital'} – TECSUP, Sede ${career.sede || 'Lima / Santa Anita'}`
+  function handleAdd() {
+    const result = addToComparator(career)
+    if (!result.ok) {
+      setToast({
+        message: result.reason === 'exists'
+          ? 'Esta carrera ya está en el comparador'
+          : 'El comparador ya tiene 3 carreras',
+        type: 'info',
+      })
+      return
+    }
+    setToast({ message: '✓ Agregado al comparador', type: 'success' })
+  }
+
+  const icon     = CAREER_ICONS[career.title]  ?? '🎓'
+  const gradient = CAREER_COLORS[career.title] ?? 'from-blue-500 to-blue-700'
+  const salary   = career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado')
+
+  /* Normaliza pdfUrl: si es relativa la hace absoluta usando la base del backend */
+  const pdfHref = career.pdfUrl
+    ? career.pdfUrl.startsWith('http')
+      ? career.pdfUrl
+      : `${import.meta.env.VITE_API_URL?.replace('/api', '') ?? 'http://localhost:4000'}${career.pdfUrl}`
+    : null
 
   return (
-    <div className="card-premium space-y-4">
-      <div className="flex justify-between items-start gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-1">
-            {career.title}
-          </h1>
-          <p className="text-xs md:text-sm text-gray-600">{departmentText}</p>
-        </div>
-        <div className="space-x-2">
-          <button onClick={() => nav('/catalog')} className="btn-secondary px-3 py-1 rounded">
-            Volver
-          </button>
-          <button onClick={add} className="v-btn px-3 py-1 rounded">
-            Agregar al comparador
-          </button>
+    <div className="space-y-6 py-4 max-w-4xl mx-auto">
+
+      {/* Hero banner */}
+      <div className={`relative bg-gradient-to-br ${gradient} rounded-2xl p-8 text-white overflow-hidden`}>
+        <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 w-32 h-32 bg-white/5 rounded-full pointer-events-none" />
+
+        <div className="relative z-10 flex flex-wrap items-start justify-between gap-6">
+          <div className="flex items-start gap-5">
+            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-4xl flex-shrink-0">
+              {icon}
+            </div>
+            <div>
+              <p className="text-white/60 text-xs font-semibold uppercase tracking-widest mb-1">
+                {career.departamento || 'Tecnología Digital'} · TECSUP
+              </p>
+              <h1 className="text-2xl md:text-3xl font-bold leading-tight">{career.title}</h1>
+              <p className="text-white/70 text-sm mt-1">{career.sede || 'Sede Santa Anita, Lima'}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => nav(-1)}
+              className="bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+            >
+              ← Volver
+            </button>
+            <button
+              onClick={handleAdd}
+              className="bg-white text-gray-900 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors"
+            >
+              ⚖️ Comparar
+            </button>
+            <Link
+              to="/assistant"
+              className="bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+            >
+              🤖 Preguntar a IA
+            </Link>
+            {pdfHref && (
+              <a
+                href={pdfHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="bg-white text-gray-900 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-1.5"
+              >
+                📄 Descargar PDF
+              </a>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 className="font-semibold mb-1">Descripción general</h3>
-          <p className="text-sm md:text-base text-slate-600 leading-relaxed whitespace-pre-line">
-            {career.longDescription || career.description}
-          </p>
+      {/* Stats rápidas */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <InfoCard icon="⏱️" label="Duración"           value={career.duration || '3 años'}      highlight="text-blue-700" />
+        <InfoCard icon="💰" label="Sueldo referencial"  value={salary}                            highlight="text-green-700" />
+        <InfoCard icon="📍" label="Sede"                value={career.sede || 'Santa Anita'}      />
+        <InfoCard icon="🏛️" label="Departamento"        value={career.departamento || 'Tecnología Digital'} />
+      </div>
 
+      {/* Contenido principal */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        {/* Columna principal */}
+        <div className="md:col-span-2 space-y-5">
+
+          {/* Descripción */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>📋</span> Descripción general
+            </h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {career.longDescription || career.description}
+            </p>
+          </div>
+
+          {/* Perfil del egresado */}
           {career.competencies?.length > 0 && (
-            <>
-              <h3 className="mt-4 font-semibold">Perfil del egresado</h3>
-              <p className="text-sm text-gray-700">
-                Competencias: {career.competencies.join(', ')}
-              </p>
-            </>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h2 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span>🎓</span> Perfil del egresado
+              </h2>
+              <ul className="space-y-2">
+                {career.competencies.map((c, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                    <span className="text-blue-500 mt-0.5">✓</span>
+                    {c}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
+          {/* Habilidades */}
           {career.skills?.length > 0 && (
-            <>
-              <h3 className="mt-3 font-semibold">Tecnologías y habilidades</h3>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {career.skills.map((skill) => (
-                  <span key={skill} className="assistant-chip">{skill}</span>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h2 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span>🛠️</span> Tecnologías y habilidades
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {career.skills.map(skill => (
+                  <span
+                    key={skill}
+                    className="bg-blue-50 text-blue-700 border border-blue-100 text-sm px-3 py-1.5 rounded-full font-medium"
+                  >
+                    {skill}
+                  </span>
                 ))}
               </div>
-            </>
+            </div>
           )}
         </div>
 
-        <div>
-          <h3 className="font-semibold">Campo laboral</h3>
-          <p className="text-sm text-gray-700">{career.field}</p>
+        {/* Columna lateral */}
+        <div className="space-y-5">
 
-          <h3 className="mt-3 font-semibold">Departamento y sede</h3>
-          <p className="text-sm text-gray-700">{departmentText}</p>
+          {/* Campo laboral */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>🎯</span> Enfoque profesional
+            </h2>
+            <p className="text-sm text-gray-600 leading-relaxed">{career.field || '—'}</p>
+          </div>
 
-          <h3 className="mt-3 font-semibold">Salario promedio</h3>
-          <p className="text-sm text-gray-700">
-            {career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado')}
-          </p>
+          {/* CTA — Asistente */}
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white">
+            <div className="text-2xl mb-2">🤖</div>
+            <h3 className="font-bold text-sm mb-1">¿Tienes dudas?</h3>
+            <p className="text-blue-100 text-xs mb-4 leading-relaxed">
+              Pregúntale a nuestro asistente de IA sobre esta carrera, campo laboral o salarios.
+            </p>
+            <Link
+              to="/assistant"
+              className="block text-center bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-50 transition-colors"
+            >
+              Hablar con IA →
+            </Link>
+          </div>
 
-          <h3 className="mt-3 font-semibold">Duración</h3>
-          <p className="text-sm text-gray-700">
-            {career.duration || '3 años'}
-          </p>
+          {/* CTA — Comparador */}
+          <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
+            <div className="text-2xl mb-2">⚖️</div>
+            <h3 className="font-bold text-sm text-gray-800 mb-1">Compara esta carrera</h3>
+            <p className="text-gray-500 text-xs mb-4 leading-relaxed">
+              Agrégala al comparador para verla junto a otras opciones.
+            </p>
+            <button
+              onClick={handleAdd}
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+            >
+              + Agregar al comparador
+            </button>
+          </div>
 
-          <h3 className="mt-3 font-semibold">Enfoque profesional</h3>
-          <p className="text-sm text-gray-700">
-            {career.field || 'No especificado'}
-          </p>
+          {/* CTA — PDF */}
+          <div className={`rounded-2xl p-5 border ${pdfHref ? 'bg-red-50 border-red-100' : 'bg-gray-50 border-gray-100'}`}>
+            <div className="text-2xl mb-2">📄</div>
+            <h3 className="font-bold text-sm text-gray-800 mb-1">Información oficial</h3>
+            {pdfHref ? (
+              <>
+                <p className="text-gray-500 text-xs mb-4 leading-relaxed">
+                  Descarga el PDF con la malla curricular, perfil del egresado y más detalles de la carrera.
+                </p>
+                <a
+                  href={pdfHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+                >
+                  📄 Descargar información PDF
+                </a>
+              </>
+            ) : (
+              <p className="text-gray-400 text-xs leading-relaxed">
+                PDF informativo no disponible por el momento.
+              </p>
+            )}
+          </div>
+
         </div>
       </div>
 

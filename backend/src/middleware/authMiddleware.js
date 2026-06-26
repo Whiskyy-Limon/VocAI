@@ -1,5 +1,6 @@
 // backend/src/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
+const { fail } = require('../utils/response');
 
 function authRequired(req, res, next) {
   const authHeader = req.headers.authorization || '';
@@ -8,7 +9,11 @@ function authRequired(req, res, next) {
     : null;
 
   if (!token) {
-    return res.status(401).json({ message: 'Token no proporcionado' });
+    return fail(res, 'Token no proporcionado', 401, 'AUTH_TOKEN_MISSING');
+  }
+
+  if (!process.env.JWT_SECRET) {
+    return fail(res, 'Error de configuracion: JWT_SECRET no disponible', 500, 'JWT_SECRET_MISSING');
   }
 
   try {
@@ -18,13 +23,14 @@ function authRequired(req, res, next) {
     const userId = payload.sub || payload.id || payload._id;
 
     if (!userId) {
-      return res.status(401).json({ message: 'Token inválido o mal formado' });
+      return fail(res, 'Token invalido o mal formado', 401, 'AUTH_TOKEN_INVALID');
     }
 
     // Para usarlo en los controladores nuevos
     req.user = {
       id: userId,
       email: payload.email,
+      role: payload.role || 'user',
     };
 
     // Para compatibilidad con código viejo que use req.userId
@@ -32,8 +38,7 @@ function authRequired(req, res, next) {
 
     next();
   } catch (err) {
-    console.error('Error verificando token:', err);
-    return res.status(401).json({ message: 'Token inválido o expirado' });
+    return fail(res, 'Token invalido o expirado', 401, 'AUTH_TOKEN_EXPIRED');
   }
 }
 

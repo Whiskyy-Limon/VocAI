@@ -4,7 +4,7 @@ const Career = require('../models/Career');
 // GET /api/careers
 const getCareers = async (req, res) => {
   try {
-    const careers = await Career.find().sort({ title: 1 });
+    const careers = await Career.find({ active: { $ne: false } }).sort({ title: 1 });
     res.json(careers);
   } catch (error) {
     console.error(error);

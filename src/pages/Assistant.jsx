@@ -8,6 +8,7 @@ import ChatMessage from '../components/assistant/ChatMessage'
 import VoiceButton from '../components/assistant/VoiceButton'
 import ListeningIndicator from '../components/assistant/ListeningIndicator'
 import EmptyChatState from '../components/assistant/EmptyChatState'
+import VocAIAvatar from '../components/assistant/VocAIAvatar'
 
 const STATUS_LABELS = {
   idle: 'Esperando tu voz',
@@ -164,6 +165,7 @@ export default function Assistant() {
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-10">
         <AssistantHeader
           statusLabel={statusLabel}
+          status={status}
           voiceOn={voiceOn}
           onToggleVoice={() => {
             setVoiceOn((prev) => !prev)
@@ -174,7 +176,12 @@ export default function Assistant() {
         <div className="assistant-grid mt-6">
           <div className="assistant-chat card-premium">
             <div ref={listRef} className="assistant-chat__log">
-              {messages.length === 0 && <EmptyChatState userEmail={user?.email} />}
+              {messages.length === 0 && (
+                <EmptyChatState
+                  userEmail={user?.email}
+                  onSuggestion={(text) => send(text)}
+                />
+              )}
               {messages.map((message) => (
                 <ChatMessage key={message.id} message={message} />
               ))}
@@ -183,6 +190,11 @@ export default function Assistant() {
 
           <div className="assistant-control card-premium">
             <ListeningIndicator status={status} transcript={liveTranscript} />
+
+            {/* Avatar animado */}
+            <VocAIAvatar status={status} />
+
+            {/* Botón de micrófono */}
             <VoiceButton
               status={status}
               onClick={handleMicrophone}
@@ -190,7 +202,7 @@ export default function Assistant() {
             />
             <div className="assistant-hint">
               {isSpeechSupported
-                ? 'Presiona para hablar. La respuesta se enviara automaticamente.'
+                ? 'Presiona para hablar. La respuesta se enviará automáticamente.'
                 : 'Tu navegador no soporta reconocimiento de voz.'}
             </div>
           </div>

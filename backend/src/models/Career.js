@@ -27,9 +27,28 @@ const careerSchema = new mongoose.Schema(
 
     areas: [{ type: String }],
 
+    // Perfil del egresado
+    graduateProfile: { type: String, trim: true },
+
+    // Campo laboral (alias semántico de field, field se conserva)
+    workField: { type: String, trim: true },
+
+    // Malla curricular resumida
+    curriculum: { type: String, trim: true },
+
+    // Recursos multimedia
+    pdfUrl:   { type: String, trim: true },
+    imageUrl: { type: String, trim: true },
+
+    // Intereses relacionados (para matching con el test)
+    interests: [{ type: String }],
+
     // Opcionales (para futuro)
     competencies: [{ type: String }],
     skills: [{ type: String }],
+
+    // Soft-delete: false = eliminado lógicamente
+    active: { type: Boolean, default: true, index: true },
   },
   { timestamps: true }
 );
