@@ -1,6 +1,52 @@
 // backend/src/controllers/profileController.js
 const VocationalProfile = require('../models/VocationalProfile');
+const User = require('../models/User');
+const Career = require('../models/Career');
 const mongoose = require('mongoose');
+
+// PUT /api/profiles/choice — el usuario marca la carrera que eligió
+async function chooseCareer(req, res) {
+  try {
+    const { careerId } = req.body || {};
+
+    if (!careerId || !mongoose.Types.ObjectId.isValid(careerId)) {
+      return res.status(400).json({ message: 'careerId inválido' });
+    }
+
+    const career = await Career.findById(careerId);
+    if (!career) {
+      return res.status(404).json({ message: 'Carrera no encontrada' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { chosenCareer: careerId, chosenCareerAt: new Date() },
+      { new: true }
+    ).select('chosenCareer chosenCareerAt');
+
+    res.json({ chosenCareer: user.chosenCareer, chosenCareerAt: user.chosenCareerAt });
+  } catch (err) {
+    console.error('Error chooseCareer:', err);
+    res.status(500).json({ message: 'Error al guardar tu elección de carrera' });
+  }
+}
+
+// GET /api/profiles/choice — carrera elegida por el usuario autenticado
+async function getMyChoice(req, res) {
+  try {
+    const user = await User.findById(req.userId)
+      .select('chosenCareer chosenCareerAt')
+      .populate('chosenCareer', 'title codigo');
+
+    res.json({
+      chosenCareer: user?.chosenCareer || null,
+      chosenCareerAt: user?.chosenCareerAt || null,
+    });
+  } catch (err) {
+    console.error('Error getMyChoice:', err);
+    res.status(500).json({ message: 'Error al obtener tu elección de carrera' });
+  }
+}
 
 async function createProfile(req, res) {
   try {
@@ -95,4 +141,4 @@ async function getProfileById(req, res) {
   }
 }
 
-module.exports = { createProfile, getMyLatestProfile, getMyHistory, getProfileById };
+module.exports = { createProfile, getMyLatestProfile, getMyHistory, getProfileById, chooseCareer, getMyChoice };

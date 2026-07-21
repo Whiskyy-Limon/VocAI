@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import useCareers from '../hooks/useCareers'
 import Toast from '../components/Toast'
 import { addToComparator } from '../utils/comparatorStorage'
+import { chooseCareer, getMyChoice } from '../services/careerChoiceService'
 
 const CAREER_ICONS = {
   'Modelado y Animación Digital': '🎨',
@@ -22,6 +23,15 @@ const CAREER_COLORS = {
   'Big Data y Ciencia de Datos': 'from-amber-500 to-orange-600',
 }
 
+const CAREER_OFFICIAL_URL = {
+  'Modelado y Animación Digital': 'https://www.tecsup.edu.pe/carrera/modelado-y-animacion-digital/',
+  'Ciberseguridad y Auditoría Informática': 'https://www.tecsup.edu.pe/carrera/ciberseguridad-y-auditoria-informatica/',
+  'Diseño y Desarrollo de Software': 'https://www.tecsup.edu.pe/carrera/diseno-y-desarrollo-de-software-2/',
+  'Diseño y Desarrollo de Simuladores y Videojuegos': 'https://www.tecsup.edu.pe/carrera/diseno-y-desarrollo-de-simuladores-y-videojuegos/',
+  'Administración de Redes y Comunicaciones': 'https://www.tecsup.edu.pe/carrera/administracion-de-redes-y-comunicaciones/',
+  'Big Data y Ciencia de Datos': 'https://www.tecsup.edu.pe/carrera/big-data-y-ciencia-de-datos/',
+}
+
 function InfoCard({ icon, label, value, highlight }) {
   return (
     <div className="bg-gray-50 rounded-2xl p-4 flex items-start gap-3">
@@ -39,11 +49,33 @@ export default function CareerDetail() {
   const nav = useNavigate()
   const { careers, loading, error } = useCareers()
   const [toast, setToast] = useState(null)
+  const [chosenCareerId, setChosenCareerId] = useState(null)
+  const [choosing, setChoosing] = useState(false)
 
   const career = useMemo(
     () => careers.find(c => c._id === id || c.id === id || c.codigo === id),
     [careers, id]
   )
+
+  useEffect(() => {
+    getMyChoice()
+      .then(data => setChosenCareerId(data?.chosenCareer?._id || data?.chosenCareer || null))
+      .catch(() => {})
+  }, [])
+
+  const handleChoose = useCallback(async () => {
+    if (!career) return
+    setChoosing(true)
+    try {
+      await chooseCareer(career._id)
+      setChosenCareerId(career._id)
+      setToast({ message: `✓ Elegiste "${career.title}" como tu carrera`, type: 'success' })
+    } catch (err) {
+      setToast({ message: 'No se pudo guardar tu elección, intenta nuevamente', type: 'error' })
+    } finally {
+      setChoosing(false)
+    }
+  }, [career])
 
   if (loading) {
     return (
@@ -101,9 +133,10 @@ export default function CareerDetail() {
     setToast({ message: '✓ Agregado al comparador', type: 'success' })
   }
 
-  const icon     = CAREER_ICONS[career.title]  ?? '🎓'
-  const gradient = CAREER_COLORS[career.title] ?? 'from-blue-500 to-blue-700'
-  const salary   = career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado')
+  const icon        = CAREER_ICONS[career.title]  ?? '🎓'
+  const gradient    = CAREER_COLORS[career.title] ?? 'from-blue-500 to-blue-700'
+  const salary      = career.salaryText || (career.salary ? `S/ ${career.salary}` : 'No especificado')
+  const officialUrl = CAREER_OFFICIAL_URL[career.title] ?? null
 
   /* Normaliza pdfUrl: si es relativa la hace absoluta usando la base del backend */
   const pdfHref = career.pdfUrl
@@ -240,6 +273,30 @@ export default function CareerDetail() {
             <p className="text-sm text-gray-600 leading-relaxed">{career.field || '—'}</p>
           </div>
 
+          {/* CTA — Elegir carrera */}
+          <div className={`rounded-2xl p-5 border ${chosenCareerId === career._id ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 shadow-sm'}`}>
+            <div className="text-2xl mb-2">{chosenCareerId === career._id ? '✅' : '🎯'}</div>
+            <h3 className="font-bold text-sm text-gray-800 mb-1">
+              {chosenCareerId === career._id ? 'Esta es tu carrera elegida' : '¿Ya decidiste?'}
+            </h3>
+            <p className="text-gray-500 text-xs mb-4 leading-relaxed">
+              {chosenCareerId === career._id
+                ? 'Marcaste esta carrera como tu elección. Puedes cambiarla cuando quieras.'
+                : 'Marca esta carrera como tu elección. Ayuda a otros postulantes a ver qué carreras eligen más.'}
+            </p>
+            <button
+              onClick={handleChoose}
+              disabled={choosing || chosenCareerId === career._id}
+              className={`w-full text-sm font-semibold px-4 py-2 rounded-xl transition-colors disabled:opacity-60 ${
+                chosenCareerId === career._id
+                  ? 'bg-green-600 text-white cursor-default'
+                  : 'bg-gray-900 hover:bg-gray-800 text-white'
+              }`}
+            >
+              {choosing ? 'Guardando...' : chosenCareerId === career._id ? '✓ Carrera elegida' : 'Elegir esta carrera'}
+            </button>
+          </div>
+
           {/* CTA — Asistente */}
           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white">
             <div className="text-2xl mb-2">🤖</div>
@@ -270,28 +327,27 @@ export default function CareerDetail() {
             </button>
           </div>
 
-          {/* CTA — PDF */}
-          <div className={`rounded-2xl p-5 border ${pdfHref ? 'bg-red-50 border-red-100' : 'bg-gray-50 border-gray-100'}`}>
-            <div className="text-2xl mb-2">📄</div>
+          {/* CTA — Información oficial */}
+          <div className={`rounded-2xl p-5 border ${officialUrl ? 'bg-blue-50 border-blue-100' : 'bg-gray-50 border-gray-100'}`}>
+            <div className="text-2xl mb-2">🌐</div>
             <h3 className="font-bold text-sm text-gray-800 mb-1">Información oficial</h3>
-            {pdfHref ? (
+            {officialUrl ? (
               <>
                 <p className="text-gray-500 text-xs mb-4 leading-relaxed">
-                  Descarga el PDF con la malla curricular, perfil del egresado y más detalles de la carrera.
+                  Consulta la malla curricular, perfil del egresado y más detalles directamente en la página oficial de TECSUP.
                 </p>
                 <a
-                  href={pdfHref}
+                  href={officialUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  download
-                  className="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+                  className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
                 >
-                  📄 Descargar información PDF
+                  🌐 Ver página oficial
                 </a>
               </>
             ) : (
               <p className="text-gray-400 text-xs leading-relaxed">
-                PDF informativo no disponible por el momento.
+                Información oficial no disponible por el momento.
               </p>
             )}
           </div>

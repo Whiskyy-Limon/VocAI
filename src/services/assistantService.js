@@ -4,6 +4,7 @@
  */
 
 import api from './api'
+import { getSessionId } from '../utils/session'
 
 /**
  * Fetch user's JWT token from localStorage
@@ -31,8 +32,9 @@ export async function askVocationalAssistant(userMessage, options = {}) {
   // resolves the authenticated user from the token, so we don't send userId in
   // the request body to avoid trusting client-provided values.
   try {
-    // Build request payload (only message) — userId is resolved on server side
-    const payload = { message: userMessage.trim() }
+    // Build request payload — userId is resolved on server side (JWT).
+    // sessionId agrupa el historial de esta conversación en MongoDB.
+    const payload = { message: userMessage.trim(), sessionId: getSessionId() }
 
     // Make POST request to backend assistant endpoint.
     // Note: the `api` client already sets the base URL via API_BASE_URL,

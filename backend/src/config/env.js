@@ -8,6 +8,9 @@ function getEnv() {
     jwtSecret: process.env.JWT_SECRET,
     openaiApiKey: process.env.OPENAI_API_KEY || null,
     openaiModel: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    elevenLabsApiKey: process.env.ELEVENLABS_API_KEY || null,
+    elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL',
+    elevenLabsModel: process.env.ELEVENLABS_MODEL || 'eleven_multilingual_v2',
   }
 }
 

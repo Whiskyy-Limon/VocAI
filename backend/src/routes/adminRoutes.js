@@ -14,6 +14,7 @@ const {
   createCareer,
   updateCareer,
   deleteCareer,
+  permanentlyDeleteCareer,
   uploadCareerFiles,
 } = require('../controllers/adminCareerController')
 
@@ -33,6 +34,7 @@ router.get('/careers',        listCareers)
 router.post('/careers',       createCareer)
 router.put('/careers/:id',    updateCareer)
 router.delete('/careers/:id', deleteCareer)
+router.delete('/careers/:id/permanent', permanentlyDeleteCareer)
 
 // ── Upload de archivos (pdf + image) ──
 // multer acepta ambos campos opcionales en un solo request

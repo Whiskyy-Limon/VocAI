@@ -121,6 +121,30 @@ async function deleteCareer(req, res) {
   }
 }
 
+/* DELETE /api/admin/careers/:id/permanent — elimina la carrera y sus archivos definitivamente */
+async function permanentlyDeleteCareer(req, res) {
+  try {
+    const career = await Career.findById(req.params.id)
+    if (!career) return fail(res, 'Carrera no encontrada', 404, 'ADMIN_C_NOT_FOUND')
+
+    // Borrar archivos locales asociados (pdf/imagen) si existen
+    for (const field of ['pdfUrl', 'imageUrl']) {
+      const url = career[field]
+      if (url?.startsWith('/uploads/')) {
+        const filePath = path.join(__dirname, '../..', url)
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+      }
+    }
+
+    const { _id, title } = career
+    await Career.deleteOne({ _id })
+
+    return ok(res, { id: _id, title }, 'Carrera eliminada permanentemente')
+  } catch (err) {
+    return fail(res, 'Error al eliminar carrera', 500, 'ADMIN_C_PERMANENT_DELETE_ERROR')
+  }
+}
+
 /* POST /api/admin/careers/:id/upload
    Campos del formulario multipart:
      - pdf   (opcional) → actualiza career.pdfUrl
@@ -166,4 +190,4 @@ async function uploadCareerFiles(req, res) {
   }
 }
 
-module.exports = { listCareers, createCareer, updateCareer, deleteCareer, uploadCareerFiles }
+module.exports = { listCareers, createCareer, updateCareer, deleteCareer, permanentlyDeleteCareer, uploadCareerFiles }

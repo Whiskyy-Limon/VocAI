@@ -1,7 +1,26 @@
 // backend/src/controllers/assistantController.js
 const OpenAI = require('openai');
+const jwt = require('jsonwebtoken');
 const Career = require('../models/Career');
+const Conversation = require('../models/Conversation');
 const { getVocationalResponse } = require('../services/aiService');
+
+/**
+ * Intenta resolver el userId desde el header Authorization sin exigirlo:
+ * el chat de voz es utilizable por invitados, pero si hay sesión activa
+ * asociamos la conversación al usuario.
+ */
+function tryResolveUserId(req) {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token || !process.env.JWT_SECRET) return null;
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    return payload.sub || payload.id || payload._id || null;
+  } catch (err) {
+    return null;
+  }
+}
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -85,7 +104,7 @@ async function askAssistant(req, res) {
  */
 async function chatAssistant(req, res) {
   try {
-    const { message } = req.body || {};
+    const { message, sessionId } = req.body || {};
 
     if (!message || !message.trim()) {
       return res.status(400).json({ message: 'El mensaje es obligatorio.' });
@@ -95,6 +114,31 @@ async function chatAssistant(req, res) {
 
     if (!response) {
       return res.status(502).json({ message: 'No se pudo generar una respuesta.' });
+    }
+
+    // Guardado del historial (best-effort): no debe romper la respuesta al usuario
+    // si Mongo falla momentáneamente.
+    if (sessionId) {
+      try {
+        const userId = tryResolveUserId(req);
+        await Conversation.findOneAndUpdate(
+          { sessionId },
+          {
+            $setOnInsert: { sessionId, userId: userId || undefined },
+            $push: {
+              messages: {
+                $each: [
+                  { role: 'user', text: message.trim() },
+                  { role: 'assistant', text: response },
+                ],
+              },
+            },
+          },
+          { upsert: true, new: true }
+        );
+      } catch (persistErr) {
+        console.error('[chatAssistant] Error guardando historial:', persistErr.message);
+      }
     }
 
     return res.json({ response });

@@ -1,5 +1,6 @@
 // backend/src/controllers/careerController.js
 const Career = require('../models/Career');
+const User = require('../models/User');
 
 // GET /api/careers
 const getCareers = async (req, res) => {
@@ -25,6 +26,34 @@ const getCareerById = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ ok: false, message: 'Error obteniendo carrera' });
+  }
+};
+
+// GET /api/careers/ranking — carreras ordenadas por cuántos usuarios las eligieron
+const getCareerRanking = async (req, res) => {
+  try {
+    const agg = await User.aggregate([
+      { $match: { chosenCareer: { $ne: null } } },
+      { $group: { _id: '$chosenCareer', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 3 },
+    ]);
+
+    const careers = await Career.find({ _id: { $in: agg.map(a => a._id) } }).lean();
+    const careerMap = new Map(careers.map(c => [String(c._id), c]));
+
+    const ranking = agg
+      .map(a => {
+        const career = careerMap.get(String(a._id));
+        if (!career) return null;
+        return { careerId: a._id, title: career.title, codigo: career.codigo, count: a.count };
+      })
+      .filter(Boolean);
+
+    res.json({ ok: true, data: ranking });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, message: 'Error obteniendo ranking de carreras' });
   }
 };
 
@@ -124,5 +153,6 @@ const seedCareers = async (req, res) => {
 module.exports = {
   getCareers,
   getCareerById,
+  getCareerRanking,
   seedCareers,
 };

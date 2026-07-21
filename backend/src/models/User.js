@@ -24,6 +24,15 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    chosenCareer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Career',
+      default: null,
+    },
+    chosenCareerAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

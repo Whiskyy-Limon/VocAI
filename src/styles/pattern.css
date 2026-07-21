@@ -1,9 +1,13 @@
-/* Pattern background for VocAI premium look */
+/* Fondo global VocAI: fachada de TECSUP con overlay para legibilidad */
 .pattern-bg {
   width: 100%;
   min-height: 100vh;
-  background-color: #ffffff;
-  background-image: radial-gradient(rgba(12, 12, 12, 0.08) 2px, transparent 0);
-  background-size: 30px 30px;
-  background-position: -5px -5px;
+  background-color: #0f172a;
+  background-image:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.82) 100%),
+    url('../assets/fondo-tecsup.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }

@@ -15,6 +15,7 @@ const assistantRoutes = require('./routes/assistantRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const testRoutes = require('./routes/testRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const voiceRoutes = require('./routes/voiceRoutes');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/assistant', assistantRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/voice', voiceRoutes);
 
 // Healthcheck
 app.get('/api/health', (req, res) => {

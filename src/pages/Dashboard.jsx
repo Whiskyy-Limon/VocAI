@@ -2,6 +2,72 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import useCareers from '../hooks/useCareers'
 import { useAuth } from '../hooks/useAuth'
+import { getCareerRanking } from '../services/careerChoiceService'
+
+const RANK_MEDALS = ['🥇', '🥈', '🥉']
+
+function CareerRanking({ careers }) {
+  const [ranking, setRanking] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getCareerRanking()
+      .then(setRanking)
+      .catch(() => setRanking([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return <div className="h-48 bg-gray-100 rounded-2xl animate-pulse" />
+  }
+
+  if (ranking.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
+        <div className="text-3xl mb-2">📊</div>
+        <p className="text-sm font-semibold text-gray-800">Aún no hay elecciones registradas</p>
+        <p className="text-xs text-gray-500 mt-1">
+          Cuando los postulantes elijan una carrera desde su página de detalle, verás aquí el ranking.
+        </p>
+      </div>
+    )
+  }
+
+  const maxCount = Math.max(...ranking.map(r => r.count))
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="space-y-3">
+        {ranking.map((item, i) => {
+          const career = careers.find(c => c._id === item.careerId || c.id === item.careerId)
+          return (
+            <Link
+              key={item.careerId}
+              to={career ? `/career/${career._id || career.id}` : '/catalog'}
+              className="flex items-center gap-3 hover:bg-gray-50 rounded-xl px-2 py-2 -mx-2 transition-colors"
+            >
+              <span className="w-7 text-center text-lg flex-shrink-0">{RANK_MEDALS[i] || `${i + 1}º`}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
+                  <span className="text-xs font-medium text-gray-500 flex-shrink-0">
+                    {item.count} {item.count === 1 ? 'persona' : 'personas'}
+                  </span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
+                    style={{ width: `${(item.count / maxCount) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </Link>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 function StatCard({ icon, label, value, sub, action }) {
   return (
@@ -169,6 +235,14 @@ function Dashboard() {
             color="emerald"
           />
         </div>
+      </div>
+
+      {/* Ranking de carreras más elegidas */}
+      <div>
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          🏆 Carreras más elegidas por los postulantes
+        </h2>
+        <CareerRanking careers={careers} />
       </div>
 
       {/* Tip */}

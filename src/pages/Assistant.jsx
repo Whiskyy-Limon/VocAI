@@ -45,7 +45,7 @@ export default function Assistant() {
       const introMsg = { id: 'intro', from: 'assistant', text: introText }
       setMessages([introMsg])
       if (voiceOn && isSupported) {
-        setTimeout(() => speak(introText), 300)
+        setTimeout(() => { speak(introText) }, 300)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,21 +91,14 @@ export default function Assistant() {
         recommendedCareers: recommended,
       }
 
-      setTimeout(() => {
+      setTimeout(async () => {
         setMessages((prev) => [...prev, assistantMsg])
         setStatus('responding')
 
         if (voiceOn && isSupported) {
-          const utter = speak(assistantMsg.text)
-          if (utter) {
-            utter.onend = () => setStatus('idle')
-            utter.onerror = () => setStatus('idle')
-          } else {
-            setStatus('idle')
-          }
-        } else {
-          setStatus('idle')
+          await speak(assistantMsg.text)
         }
+        setStatus('idle')
       }, 450)
     } catch (err) {
       const errorText = err?.message || 'Ocurrio un problema al procesar tu solicitud.'
@@ -172,6 +165,13 @@ export default function Assistant() {
             if (voiceOn) cancel()
           }}
         />
+
+        {!isSpeechSupported && (
+          <div className="mt-4 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 rounded-xl">
+            <span>⚠️</span>
+            Tu navegador no soporta reconocimiento de voz. Usa <strong className="mx-1">Google Chrome</strong> para hablar con VocAI (puedes seguir escribiendo tus preguntas).
+          </div>
+        )}
 
         <div className="assistant-grid mt-6">
           <div className="assistant-chat card-premium">

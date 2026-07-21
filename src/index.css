@@ -13,12 +13,12 @@ body {
 }
 
 :root {
-	--vocai-ink: #0f172a;
-	--vocai-ink-soft: #1e293b;
-	--vocai-accent: #0ea5e9;
-	--vocai-accent-strong: #2563eb;
-	--vocai-accent-soft: #e0f2fe;
-	--vocai-lilac: #eef2ff;
+	--vocai-ink: #18181b;
+	--vocai-ink-soft: #3f3f46;
+	--vocai-accent: #00aeef;
+	--vocai-accent-strong: #0072a3;
+	--vocai-accent-soft: #cff6ff;
+	--vocai-lilac: #eaf6fa;
 	--vocai-mist: #f8fafc;
 }
 
@@ -439,6 +439,61 @@ body {
 @keyframes sound-bounce {
 	from { transform: scaleY(0.4); opacity: 0.6; }
 	to   { transform: scaleY(1);   opacity: 1; }
+}
+
+/* ═══════════════════════════════════════
+   Ilustración animada de estudiante (Login/Register)
+═══════════════════════════════════════ */
+
+.student-illustration {
+	position: relative;
+	width: 220px;
+	margin: 0 auto;
+}
+
+.student-svg {
+	width: 100%;
+	height: auto;
+	filter: drop-shadow(0 16px 26px rgba(6, 43, 61, 0.35));
+}
+
+.student-body-float {
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: student-float 3.6s ease-in-out infinite;
+}
+
+.student-wave-arm {
+	transform-box: fill-box;
+	transform-origin: 50% 100%;
+	animation: wave-hand 1.7s ease-in-out infinite;
+}
+
+@keyframes student-float {
+	0%, 100% { transform: translateY(0); }
+	50%      { transform: translateY(-9px); }
+}
+
+@keyframes wave-hand {
+	0%, 100% { transform: rotate(0deg); }
+	25%      { transform: rotate(-18deg); }
+	75%      { transform: rotate(-4deg); }
+}
+
+.student-float-icon {
+	position: absolute;
+	font-size: 1.6rem;
+	animation: icon-float 3s ease-in-out infinite;
+	filter: drop-shadow(0 6px 10px rgba(6, 43, 61, 0.25));
+}
+
+.student-float-icon--1 { top: -4px;   left: -14px;  animation-delay: 0s; }
+.student-float-icon--2 { top: 26px;   right: -22px; font-size: 1.3rem; animation-delay: 0.6s; }
+.student-float-icon--3 { bottom: 34px; left: -26px; font-size: 1.4rem; animation-delay: 1.2s; }
+
+@keyframes icon-float {
+	0%, 100% { transform: translateY(0) rotate(-6deg); }
+	50%      { transform: translateY(-14px) rotate(6deg); }
 }
 
 /* Search input premium style (Uiverse-like) using project palette */

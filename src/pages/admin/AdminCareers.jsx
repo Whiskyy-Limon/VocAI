@@ -246,6 +246,52 @@ function CareerModal({ career, onClose, onSaved, notify }) {
   )
 }
 
+/* ── Modal de advertencia — eliminar carrera ── */
+function ConfirmDeleteModal({ career, onClose, onDeleted, notify }) {
+  const [loading, setLoading] = useState(false)
+
+  async function handleConfirm() {
+    setLoading(true)
+    try {
+      await adminCareers.remove(career._id)
+      onDeleted(career._id)
+      notify(`"${career.title}" eliminada permanentemente`)
+    } catch (err) {
+      notify(err?.response?.data?.message || 'Error al eliminar la carrera', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+        <div className="w-14 h-14 rounded-2xl bg-red-100 flex items-center justify-center text-3xl mx-auto mb-4">
+          ⚠️
+        </div>
+        <h2 className="font-bold text-gray-900 text-lg text-center mb-2">¿Eliminar esta carrera?</h2>
+        <p className="text-gray-500 text-sm text-center leading-relaxed mb-1">
+          Estás por eliminar <strong className="text-gray-800">"{career.title}"</strong> de forma permanente.
+        </p>
+        <p className="text-red-600 text-xs text-center font-medium mb-6">
+          Esta acción no se puede deshacer. Se borrará toda su información y archivos asociados (PDF, imagen).
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onClose} disabled={loading} type="button"
+            className="flex-1 px-4 py-2.5 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-60">
+            Cancelar
+          </button>
+          <button onClick={handleConfirm} disabled={loading} type="button"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl bg-red-600 hover:bg-red-700 text-white disabled:opacity-60 transition-colors flex items-center justify-center gap-2">
+            {loading && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+            {loading ? 'Eliminando...' : 'Sí, eliminar'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── Página principal ── */
 export default function AdminCareers() {
   const [careers, setCareers] = useState([])
@@ -253,6 +299,7 @@ export default function AdminCareers() {
   const [modal,   setModal]   = useState(null)
   const [toast,   setToast]   = useState(null)
   const [filter,  setFilter]  = useState('all')
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const notify = useCallback((msg, type = 'success') => {
     setToast({ msg, type })
@@ -413,6 +460,10 @@ export default function AdminCareers() {
                             ✅ Reactivar
                           </button>
                       }
+                      <button onClick={() => setDeleteTarget(career)}
+                        className="text-xs font-medium text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg transition-colors">
+                        🗑️ Eliminar
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -427,6 +478,18 @@ export default function AdminCareers() {
           career={modal === 'new' ? null : modal}
           onClose={() => setModal(null)}
           onSaved={handleSaved}
+          notify={notify}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDeleteModal
+          career={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onDeleted={(id) => {
+            setCareers(prev => prev.filter(c => c._id !== id))
+            setDeleteTarget(null)
+          }}
           notify={notify}
         />
       )}

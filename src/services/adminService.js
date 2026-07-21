@@ -14,6 +14,10 @@ export const adminCareers = {
   deactivate: (id) =>
     api.delete(`/admin/careers/${id}`).then(r => r.data.data),
 
+  /** Elimina la carrera de forma permanente (irreversible) */
+  remove: (id) =>
+    api.delete(`/admin/careers/${id}/permanent`).then(r => r.data.data),
+
   /**
    * Sube pdf y/o imagen para una carrera.
    * @param {string} id  — _id de la carrera

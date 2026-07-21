@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { emailValid, passwordValid } from '../../utils/validators'
+import AnimatedStudent from '../../components/auth/AnimatedStudent'
 
 export default function Login() {
   const { login } = useAuth()
@@ -35,8 +36,8 @@ export default function Login() {
         <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-white/10 rounded-full" />
 
         <div className="relative z-10 text-center max-w-sm">
-          <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur">
-            <span className="text-4xl">🎓</span>
+          <div className="mb-6">
+            <AnimatedStudent />
           </div>
           <h1 className="text-4xl font-bold mb-3">VocAI</h1>
           <p className="text-blue-100 text-lg leading-relaxed">

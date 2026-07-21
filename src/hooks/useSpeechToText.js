@@ -29,11 +29,12 @@ export default function useSpeechToText() {
       onEnd,
       interimResults = false,
       continuous = false,
+      lang = 'es-PE',
     } = options
 
     recognition.continuous = !!continuous
     recognition.interimResults = !!interimResults
-    recognition.lang = 'es-ES'
+    recognition.lang = lang
 
     recognition.onstart = () => {
       setIsListening(true)

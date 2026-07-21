@@ -23,16 +23,37 @@ Debes:
 - Explicar de manera clara y sencilla las áreas de cada carrera.
 - Hablar únicamente sobre orientación vocacional y tecnología digital.
 - Responder de forma breve, amigable y profesional.
+- Responder siempre en texto plano, sin ningún formato Markdown: nada de asteriscos, negritas, guiones de lista ni símbolos "#". Si necesitas enumerar, usa números seguidos de un paréntesis o punto, por ejemplo "1) " o "1.", seguido de texto normal.
 
 NO debes:
 - Inventar carreras.
 - Mencionar universidades externas.
 - Recomendar carreras fuera de la lista.
 - Responder temas ajenos a orientación vocacional.
+- Usar asteriscos (*) o cualquier otro símbolo de formato Markdown.
 
 Si el usuario pregunta algo fuera del contexto permitido responde:
 "Solo puedo ayudarte con orientación vocacional sobre las carreras del Departamento de Tecnología Digital de TECSUP."
 `
+
+/**
+ * Quita formato Markdown residual (negritas, itálicas, headers, viñetas)
+ * por si el modelo lo agrega a pesar de las instrucciones del prompt.
+ * Así el texto queda limpio tanto para mostrarlo en el chat como para
+ * enviarlo a ElevenLabs/SpeechSynthesis sin que se lean los símbolos.
+ */
+function stripMarkdown(text) {
+  if (!text) return text
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[-*+]\s+/gm, '')
+    .replace(/`(.*?)`/g, '$1')
+    .replace(/\*/g, '')
+    .trim()
+}
 
 async function getVocationalResponse(message) {
   if (!process.env.OPENAI_API_KEY) {
@@ -57,7 +78,8 @@ async function getVocationalResponse(message) {
     max_tokens: 600,
   })
 
-  return completion?.choices?.[0]?.message?.content?.trim() || ''
+  const raw = completion?.choices?.[0]?.message?.content?.trim() || ''
+  return stripMarkdown(raw)
 }
 
 module.exports = {
